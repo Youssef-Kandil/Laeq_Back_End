@@ -1,0 +1,36 @@
+## PRISMA ##
+* Get_All_database_And_Create_Models ==> npx prisma db pull 
+* Generate_PrismaModels_In_ClinteSide ==> sudo npx prisma generate
+
+## NPM ##
+* Install all packages ==> npm install
+
+## Architecture MSRC Patern ##
+## (MSRC) Model Service Router Controller ##
+[1] user sends request ==> [2] Router directs it to Controller ==> 
+[3] Controller calls Service ==> [4] Service calls Model ==> 
+[5] Model interacts with database ==> [6] Result returns in reverse order
+
+
+
+## Ecryption & Decryption ##
+// 1. ecryption the data we need in front-end before sending it to the back-end using  FRONTEND_PRIVATE_KEY (layer 1 encryption)
+// 2. encryption the data we need in back-end before sending it to the database useing BACKEND_PRIVATE_KEY (layer 2 encryption)
+
+// 3. decryption the data we need in back-end before sending it to the front-end using FRONTEND_PRIVATE_KEY (layer 1 decryption)
+// 4. decryption the data we need in database before sending it to the back-end using BACKEND_PRIVATE_KEY (layer 2 decryption)
+
+
+## هنخلص مديول الوجين و الساين اب الاول فرونت و باك
+## و بعدين نعمل مديول الشركات 
+## و بعدين نعمل مديول اليوزر و الرولز
+
+## بعدين الاسيتس
+## بعدين نخش علي الاتشك ليست
+## بعدين داش بورد لائق
+
+
+
+
+
+

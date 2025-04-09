@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model admin_users {
+  id                   Int           @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  auth_id              Int           @db.UnsignedInt
+  full_name            String        @db.VarChar(45)
+  phone                String        @db.Text
+  register_with_google Int           @db.TinyInt
+  date_registered      DateTime      @default(now()) @db.Timestamp(0)
+  start_date           String        @db.VarChar(100)
+  end_date             String        @db.VarChar(100)
+  plan_type            String        @db.VarChar(45)
+  plan_id              Int
+  auth                 auth          @relation(fields: [auth_id], references: [id], onDelete: Cascade, map: "admin_auth")
+  plans                plans         @relation(fields: [plan_id], references: [id], onDelete: Cascade, map: "admin_plan")
+  assets               assets[]
+  companies            companies[]
+  departments          departments[]
+  roles                roles[]
+  sites                sites[]
+
+  @@index([auth_id], map: "admin_auth")
+  @@index([plan_id], map: "admin_plan_idx")
+}
+
+model employees {
+  id              Int       @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  admin_id        Int       @db.UnsignedInt
+  auth_id         Int?      @db.UnsignedInt
+  full_name       String    @db.VarChar(45)
+  job_title       String?   @db.VarChar(45)
+  email           String    @db.VarChar(100)
+  password        String    @db.Text
+  phone           String    @db.Text
+  company_id      Int
+  site_id         Int
+  department_id   Int?
+  role_id         Int
+  is_active       Int       @db.TinyInt
+  date_registered DateTime  @default(now()) @db.Timestamp(0)
+  auth            auth?     @relation(fields: [auth_id], references: [id], onDelete: Cascade, map: "emp_auth")
+  companies       companies @relation(fields: [company_id], references: [id], onDelete: Cascade, map: "emp_company")
+  roles           roles     @relation(fields: [role_id], references: [id], onDelete: Cascade, map: "emp_role")
+  sites           sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, map: "emp_site")
+
+  @@index([admin_id], map: "emp_admin_idx")
+  @@index([company_id], map: "emp_company_idx")
+  @@index([role_id], map: "emp_role_idx")
+  @@index([site_id], map: "emp_site_idx")
+  @@index([auth_id], map: "emp_auth")
+}
+
+model assets {
+  id                    Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  admin_id              Int
+  company_id            Int
+  site_id               Int
+  asset_name            String      @db.VarChar(45)
+  asset_category        String      @db.VarChar(45)
+  brand                 String      @db.VarChar(45)
+  model                 String      @db.VarChar(100)
+  warranty_date         String      @db.VarChar(20)
+  last_maintenance_date String?     @db.VarChar(50)
+  next_maintenance_date String?     @db.VarChar(50)
+  color                 String      @db.VarChar(20)
+  serial_number         String      @db.Text
+  description           String?     @db.VarChar(100)
+  date                  DateTime    @default(now()) @db.Timestamp(0)
+  admin_users           admin_users @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "asset_admin")
+  companies             companies   @relation(fields: [company_id], references: [id], onDelete: Cascade, map: "asset_company")
+  sites                 sites       @relation(fields: [site_id], references: [id], onDelete: Cascade, map: "asset_site")
+
+  @@index([admin_id], map: "asset_admin_idx")
+  @@index([company_id], map: "asset_company_idx")
+  @@index([site_id], map: "asset_site_idx")
+}
+
+model companies {
+  id              Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  admin_id        Int
+  company_name    String      @db.VarChar(45)
+  sector_type     String      @db.VarChar(45)
+  company_email   String      @db.VarChar(45)
+  company_website String?     @db.VarChar(100)
+  comapny_logo    String?     @db.Text
+  company_license String      @db.Text
+  date            DateTime    @default(now()) @db.Timestamp(0)
+  assets          assets[]
+  admin_users     admin_users @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "companies_admin")
+  employees       employees[]
+  sites           sites[]
+
+  @@index([admin_id], map: "companies_admin_idx")
+}
+
+model departments {
+  id              Int         @id @default(autoincrement()) @db.UnsignedInt
+  admin_id        Int
+  site_id         Int
+  dep_name        String      @db.VarChar(45)
+  dep_description String?     @db.VarChar(100)
+  date            DateTime    @default(now()) @db.Timestamp(0)
+  admin_users     admin_users @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "dep_admin")
+  sites           sites       @relation(fields: [site_id], references: [id], onDelete: Cascade, map: "dep_site")
+
+  @@index([admin_id], map: "dep_admin_idx")
+  @@index([site_id], map: "dep_site_idx")
+}
+
+model permissions {
+  id               Int                @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  permission_name  String             @db.VarChar(45)
+  permission_type  String             @db.VarChar(45)
+  role_permissions role_permissions[]
+}
+
+model role_permissions {
+  id            Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  role_id       Int
+  permission_id Int
+  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "permission")
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "role")
+
+  @@index([permission_id], map: "permission_idx")
+  @@index([role_id], map: "role_idx")
+}
+
+model roles {
+  id               Int                @id @unique(map: "id_UNIQUE")
+  admin_id         Int
+  role_name        String             @db.VarChar(45)
+  department_id    Int
+  description      String?            @db.VarChar(100)
+  date_created     DateTime           @default(now()) @db.Timestamp(0)
+  employees        employees[]
+  role_permissions role_permissions[]
+  admin_users      admin_users        @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "role_admin")
+
+  @@index([admin_id], map: "role_admin_idx")
+}
+
+model sites {
+  id           Int           @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  admin_id     Int
+  company_id   Int
+  site_name    String        @db.VarChar(45)
+  time_zone    String?       @db.VarChar(45)
+  full_address String        @db.VarChar(245)
+  post_code    String        @db.VarChar(45)
+  lat          String        @db.VarChar(45)
+  long         String        @db.VarChar(45)
+  site_license String        @db.VarChar(45)
+  date         DateTime      @default(now()) @db.Timestamp(0)
+  assets       assets[]
+  departments  departments[]
+  employees    employees[]
+  admin_users  admin_users   @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "site_admin")
+  companies    companies     @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "site_company")
+
+  @@index([admin_id], map: "site_admin_idx")
+  @@index([company_id], map: "site_company_idx")
+}
+
+model auth {
+  id              Int           @id @default(autoincrement()) @db.UnsignedInt
+  email           String        @unique(map: "email_UNIQUE") @db.VarChar(255)
+  password        String?       @db.VarChar(255)
+  is_admin        Int           @default(1) @db.TinyInt
+  provider        String?       @db.VarChar(45)
+  provider_id     String?       @unique(map: "provider_id_UNIQUE") @db.VarChar(45)
+  date_registered DateTime      @default(now()) @db.Timestamp(0)
+  admin_users     admin_users[]
+  employees       employees[]
+}
+
+model plans {
+  id           Int            @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  title        String         @db.VarChar(45)
+  price        String         @db.VarChar(45)
+  duration     String         @db.VarChar(100)
+  is_yearly    Int            @default(0) @db.TinyInt
+  created_date DateTime       @default(now()) @db.Timestamp(0)
+  admin_users  admin_users[]
+  plan_details plan_details[]
+}
+
+model features {
+  id           Int            @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  feature_name String         @db.VarChar(45)
+  plan_details plan_details[]
+}
+
+model plan_details {
+  id         Int      @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  plan_id    Int
+  feature_id Int
+  plans      plans    @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "details_of_plan")
+  features   features @relation(fields: [feature_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "features_of_plan")
+
+  @@index([plan_id], map: "details_of_plan_idx")
+  @@index([feature_id], map: "features_of_plan_idx")
+}
