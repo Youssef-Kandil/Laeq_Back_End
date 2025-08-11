@@ -1,4 +1,5 @@
 import login_Model from "../Models/login_Model";
+import { adminType ,employeeType } from "../types/UsersTypes";
 import {  Response } from "express";
 import jwt from "jsonwebtoken";
 import encryption from "../Utils/encryption";
@@ -34,7 +35,7 @@ console.log("JWT_SECRET:", JWT_SECRET);
 class login_Service {
     // == Login  Account ==
     public async handelLoginData(requestData:requestDataProperties,res:Response) {
-        console.log("handelLoginData JWT_SECRET :: ",JWT_SECRET)
+        console.log("handelLoginData JWT_SECRET :: ",JWT_SECRET) 
         try {
 
             // === Check type of the request data ===   
@@ -47,10 +48,8 @@ class login_Service {
             }
             console.log("login_Service handelLoginData requestData",requestData);
 
-            // ===layer 2 encryption data  ===
-            const hashed_Email = encryption.encryption(requestData?.email ,process.env.BACKEND_PRIVATE_KEY as string);
+            // ===encryption data  ===
             const hashed_Password = encryption.encryption( requestData?.password ,process.env.BACKEND_PRIVATE_KEY as string);
-            requestData.email = hashed_Email;
             requestData.password = hashed_Password;
 
             // === Call the model function and pass the request
@@ -60,25 +59,22 @@ class login_Service {
             }
             console.log("login_Service 3 handelLoginData result ===> >> ",result);
 
-            const decryptedEmail = encryption.decryption(result.email ,process.env.BACKEND_PRIVATE_KEY as string);
-            result.email = decryptedEmail;
-            console.log("login_Service 4 handelLoginData decryptedEmail ===> >> ",decryptedEmail);
 
 
             // === GENERATE JWT TOKEN ===
             // == THIS RESPONSED DATA IS NOT FULLY DECRYPTED ==
             // == IT NEED TO BE DECRYPTED IN THE FRONT END (LAYER 2 DECRYPTION) ==
-            const { email , id , is_admin } : Partial<response> = result;
-            const token = jwt.sign({email,id,is_admin}, JWT_SECRET, { expiresIn: '1d' });
-            console.log("login_Service handelLoginData token",token);
+            // const { email , id  } : Partial<response> = result;
+            // const token = jwt.sign({email,id}, JWT_SECRET, { expiresIn: '1d' });
+            // console.log("login_Service handelLoginData token",token);
   
             // SENT TOKEN TO Cookie
-            res.cookie('token', token, {
-              httpOnly: false,
-              secure: false,
-              sameSite: 'lax',
-              maxAge: 24 * 60 * 60 * 1000,
-            });
+            // res.cookie('token', token, {
+            //   httpOnly: false,
+            //   secure: process.env.NODE_ENV === 'production',
+            //   sameSite: 'lax',
+            //   maxAge: 24 * 60 * 60 * 1000,
+            // });
             return result;
         } catch (error) {
             throw error;
@@ -119,8 +115,9 @@ class login_Service {
 
             // SENT TOKEN TO Cookie
             res.cookie('token', token, {
-              httpOnly: true,
+              httpOnly: false,
               secure: process.env.NODE_ENV === 'production',
+            //   secure: false,
               sameSite: 'lax',
             });
             return result;

@@ -10,17 +10,18 @@ export interface AuthenticatedRequest extends Request {
 
 export const verifyJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction):any => {
   const JWT_SECRET = process.env.JWT_SECRET as string;
+  console.log("req.path", req.path)
     // === Check The request PATH  ===
-    if (req.path === '/login' || req.path === '/login_with_google' || req.path === '/create_admin_account'|| req.path === '/create_admin_account_with_google') {
+    if (req.path === '/login' || req.path === '/login_with_google' || req.path === '/create_admin_account'|| req.path === '/create_admin_account_with_google'|| req.path === '/imgToPDF') {
       return next(); // عدم تطبيق الميدل وير على الـ login و signup
     }
    // === Check if the request has a token ===
-  const token = req.cookies.token;
-
+    const token = req.cookies.token;
+    console.log("req.path", req.path)
 
   if (!token) {
-     res.status(401).json({ message: 'Unauthorized',Status:false ,err:"No token provided" });
-     return "";
+    console.log("Unauthorized")
+    return res.status(401).json({ message: 'Unauthorized',isAuthenticated:false ,err:"No token provided" });
   }
 
 
@@ -31,7 +32,7 @@ export const verifyJWT = (req: AuthenticatedRequest, res: Response, next: NextFu
     console.log("JWT_SECRET :: ",decoded)
     next();
   } catch (err) {
-     res.status(401).json({ message: 'Unauthorized: Invalid token',Status:false ,err});
+     res.status(401).json({ message: 'Unauthorized: Invalid token',isAuthenticated:false ,err});
   }
 };
 

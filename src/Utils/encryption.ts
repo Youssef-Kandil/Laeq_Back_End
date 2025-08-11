@@ -1,3 +1,4 @@
+//=== layer 1
 class encryption {
  // تحويل النص إلى مشفر
   encryption = (token :string , key:string) => {
