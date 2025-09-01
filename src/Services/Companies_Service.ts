@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 class Companies_Service {
-    // == Get All Checklist ==
+    // == Get All Companies By Admin ID ==
     public async getAllUserCompaniesByID(requestData:{admin_id:number}) {
         try {
             const res = await Companies_Model.FetchUserCompaniesByIDFromDB(requestData.admin_id)

@@ -14,7 +14,7 @@ class admin_users_Model  {
                 data:{
                     email:args.email,
                     password:args.password,
-                    roll:args.role,
+                    role:args.role,
                     admin_users:{
                         create:{
                             full_name:args.full_name,
@@ -23,13 +23,71 @@ class admin_users_Model  {
                             plan_id:args.plan_id,
                             plan_type:args.plan_type,
                             start_date:args.start_date,
-                            end_date:args.end_date
+                            end_date:args.end_date,
+                            admin_account_limits:{
+                                create:{
+                                    max_companies:1,
+                                    max_site:1,
+                                    max_users:1,
+                                    max_custom_checklists:0,
+                                    max_Corrective_action:0,
+                                    free_onsite_inspections:0,
+                                    Arabic_language_support:0,
+                                    Access_to_training_programs:0,
+                                    Daily_monitoring_sheets:0,
+                                }
+                            }
                         }
-                    }
+                    },
+                    
+                },
+                include: {
+                    admin_users: true
                 }
             })
 
+            console.warn(result)
+            return result
+        }catch(error){
+            console.error("❌ Error creating admin:", error);
+        }
+    }
 
+    // === update Admin Account
+    public async updateAccountPlan(args:{admin_id:number,start_date:string,end_date:string,plan_id:number,plan_type:string}) {
+
+        try{
+            
+            const result = await prisma.admin_users.update({
+                where:{
+                    id:args.admin_id
+                },
+                data:{
+                    start_date:args.start_date,
+                    end_date:args.end_date,
+                    plan_id:args.plan_id,
+                    plan_type:args.plan_type,
+                    admin_account_limits:{
+                        updateMany : {
+                            where:{
+                                admin_id:args.admin_id
+                            },
+                            data: {
+                                max_custom_checklists: 5,
+                                max_companies: 10,
+                                max_site: 1,
+                                max_users: 3,
+                                free_onsite_inspections: 0,
+                            }
+                        },
+                    }
+                },
+                include:{
+                    admin_account_limits:true
+                }
+            })
+
+            console.warn(result)
             return result
         }catch(error){
             console.error("❌ Error creating admin:", error);

@@ -8,14 +8,14 @@ const prisma = new PrismaClient();
 
 
 class Subscriptions_Model  {
-    // === Get All CheckLists (Parent Categories)
+    // === Get All Subscription
         public async FetchSubscriptionsFromDB(){
             const result =  await prisma.subscriptions.findMany()
             console.warn("Model : ",result)
             return result
         }
 
-    // === Add New CheckLists (Parent Categories)
+    // === Add New Subscription
         public async PostSubscriptionToDB(args:SubscriptionType){
             const res =  await prisma.subscriptions.create({
                 data:{

@@ -1,16 +1,18 @@
 
 export interface laeq_user{
+    id:number;
     // ==== users Table info ===
     email:string;
     password:string;
     role:"laeq";
     // ==== users Table info ===
     user_id:number;
-    user_name:string;
+    full_name:string;
 }
 
 
 export interface adminType{
+    admin_id?:number;
      // ==== users Table info ===
     email:string;
     password:string;

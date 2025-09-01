@@ -13,7 +13,22 @@ class Employees_Model  {
                     admin_id:arg.admin_id
                 },
                 include:{
-                    roles:true
+                    sites:{
+                        select:{
+                            site_name:true
+                        }
+                    },
+                    users:{
+                        select:{
+                            email:true
+                        }
+                    },
+                    roles:{
+                        select:{
+                            id:true,
+                            role_name:true,
+                        }
+                    }
                 }
             })
 
@@ -28,7 +43,7 @@ class Employees_Model  {
                 data:{
                     email:args.email,
                     password:args.password,
-                    roll:"employee",
+                    role:"employee",
 
                     employees:{
                         create:{

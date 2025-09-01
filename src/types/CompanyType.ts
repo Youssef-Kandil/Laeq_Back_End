@@ -34,10 +34,5 @@ export interface fullCompanySiteTYPE{
 
 
 
-    site_name: string,
-    full_address: string,
-    post_code: string,
-    lat: string,
-    long: string,
-    company_id: number
+    sites:siteType[]
 }

@@ -22,10 +22,12 @@ import loginRouter from "./Routers/login_Router";
 import is_Auth from "./Routers/isAuthenticated_Router"
 
 import Plans_Router from "./Routers/Plans_Router";
+import tap_pay_Router from "./Routers/tap_pay_Router";
 import subscriptions_Router from "./Routers/subscriptions_Router";
 import Companies_Router from "./Routers/Companies_Router";
 import Sites_Routers from "./Routers/Sites_Routers";
 import Roles_Routers from "./Routers/Roles_Routers";
+import permissions_Routers from "./Routers/permissions_Routers";
 import Employees_Routers from "./Routers/Employees_Routers";
 
 import CheckLists_Router from './Routers/CheckLists_Routers';
@@ -82,9 +84,10 @@ export default function createApp(){
     });
 
     app.use(cors({
-    origin: 'http://localhost:3000', 
-    // origin: 'http://192.168.1.16:3000', 
+    // origin: 'http://localhost:3000', 
+    // origin: 'http://192.168.1.16:3002', 
     // origin: 'http://localhost:3001', 
+    origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type','Access-Control-Allow-Credentials'] ,
     credentials: true,
@@ -99,10 +102,12 @@ export default function createApp(){
     app.use(loginRouter);
      
     app.use(Plans_Router);
+    app.use(tap_pay_Router);
     app.use(subscriptions_Router);
     app.use(Companies_Router);
     app.use(Sites_Routers);
     app.use(Roles_Routers);
+    app.use(permissions_Routers);
     app.use(Employees_Routers);
 
     app.use(CheckLists_Router);

@@ -21,7 +21,8 @@ class login_Model  {
               },
               select:{
                 id:true,
-                roll:true
+                email:true,
+                role:true
               }
             })
 
@@ -31,26 +32,48 @@ class login_Model  {
 
             // === Check If The User Is Admin Or Not To Search In Correct Table ===
              let userDetails = null;
-            if (loginResult.roll === "admin") {
+            if (loginResult.role === "admin") {
                 userDetails = await prisma.admin_users.findFirst({
                   where: { user_id: loginResult.id },
                   select:{
+                    id:true,
                     full_name:true,
                     phone:true,
+                    plan_id:true,
                     plan_type:true,
                     start_date:true,
                     end_date:true,
+                    admin_account_limits:{
+                      select:{
+                        max_companies:true,
+                        max_site:true,
+                        max_users:true,
+                        max_custom_checklists:true,
+                        max_Corrective_action:true,
+                        free_onsite_inspections:true,
+                        Arabic_language_support:true,
+                        Access_to_training_programs:true,
+                        Daily_monitoring_sheets:true,
+                      }
+                    }
                   }
                 });
-              } else if (loginResult.roll === "employee") {
+              } else if (loginResult.role === "employee") {
                 userDetails = await prisma.employees.findFirst({
                   where: { user_id: loginResult.id }
+                });
+              } else if (loginResult.role === "laeq") {
+                userDetails = await prisma.super_admins.findFirst({
+                  where: { user_id: loginResult.id },
+                  select:{
+                    full_name:true
+                  }
                 });
               }
 
               // ===== decription Phone ====
-              if (userDetails?.phone) {            
-                 userDetails.phone = encryption.decryption(userDetails.phone,process.env.BACKEND_PRIVATE_KEY as string)
+              if (userDetails && "phone" in userDetails && userDetails.phone) {            
+                 userDetails.phone = encryption.decryption(String(userDetails?.phone), process.env.BACKEND_PRIVATE_KEY as string)
               }
                
                 // === Return The User Details ===

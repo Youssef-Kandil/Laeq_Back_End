@@ -8,18 +8,19 @@ datasource db {
 }
 
 model admin_users {
-  id                   Int             @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  id                   Int                    @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id              Int
   plan_id              Int
-  full_name            String          @db.VarChar(45)
-  phone                String          @unique(map: "phone_UNIQUE") @db.VarChar(255)
-  register_with_google Int             @db.TinyInt
-  date_registered      DateTime        @default(now()) @db.Timestamp(0)
-  start_date           String          @db.VarChar(100)
-  end_date             String          @db.VarChar(100)
-  plan_type            String          @db.VarChar(45)
-  plans                plans           @relation(fields: [plan_id], references: [id], onDelete: Cascade, map: "admin_plan")
-  users                users           @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_id_client")
+  full_name            String                 @db.VarChar(45)
+  phone                String                 @db.VarChar(255)
+  register_with_google Int                    @db.TinyInt
+  date_registered      DateTime               @default(now()) @db.Timestamp(0)
+  start_date           String                 @db.VarChar(100)
+  end_date             String                 @db.VarChar(100)
+  plan_type            String                 @db.VarChar(45)
+  admin_account_limits admin_account_limits[]
+  plans                plans                  @relation(fields: [plan_id], references: [id], onDelete: Cascade, map: "admin_plan")
+  users                users                  @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_id_client")
   assets               assets[]
   companies            companies[]
   departments          departments[]
@@ -122,7 +123,7 @@ model departments {
 model permissions {
   id               Int                @id @unique(map: "id_UNIQUE") @default(autoincrement())
   permission_name  String             @db.VarChar(45)
-  permission_type  String             @db.VarChar(45)
+  permission_type  String?            @db.VarChar(45)
   role_permissions role_permissions[]
 }
 
@@ -204,13 +205,20 @@ model features {
 }
 
 model admin_account_limits {
-  id                      Int @id @unique(map: "id_UNIQUE") @default(autoincrement())
-  admin_id                Int
-  add_custom_checklists   Int @default(0)
-  add_companies           Int @default(0)
-  add_site                Int @default(0)
-  add_users               Int @default(0)
-  free_onsite_inspections Int @default(0)
+  id                          Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  admin_id                    Int
+  max_custom_checklists       Int         @default(0)
+  max_companies               Int         @default(0)
+  max_site                    Int         @default(0)
+  max_users                   Int         @default(0)
+  free_onsite_inspections     Int         @default(0)
+  Arabic_language_support     Int         @default(0) @map("Arabic language support") @db.TinyInt
+  Access_to_training_programs Int         @default(0) @map("Access to training programs") @db.TinyInt
+  max_Corrective_action       Int         @default(0)
+  Daily_monitoring_sheets     Int         @default(0) @map("Daily monitoring sheets") @db.TinyInt
+  admin_users                 admin_users @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "admin_id_LMTS")
+
+  @@index([admin_id], map: "admin_id_LMTS_idx")
 }
 
 model checklists {
@@ -282,21 +290,25 @@ model question_answers {
 }
 
 model super_admins {
-  id        Int    @id
+  id        Int    @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id   Int
-  full_name String @db.VarChar(45)
+  full_name String @db.VarChar(100)
+  users     users  @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_id_super")
+
+  @@index([user_id], map: "user_id_idx")
 }
 
 model users {
   id               Int                @id @unique(map: "id_UNIQUE") @default(autoincrement())
   email            String             @db.VarChar(100)
   password         String             @db.VarChar(100)
-  roll             String             @db.VarChar(100)
+  role             String             @db.VarChar(100)
   created_at       DateTime           @default(now()) @db.Timestamp(0)
   admin_users      admin_users[]
   employees        employees[]
   laeq_admins      laeq_admins[]
   question_answers question_answers[]
+  super_admins     super_admins[]
 }
 
 model products {

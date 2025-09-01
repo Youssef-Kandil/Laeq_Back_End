@@ -6,17 +6,24 @@ const prisma = new PrismaClient();
 
 
 class checklist_templates_Model  {
-    // === Get All CheckLists (Parent Categories)
+    // === Get All Templates by Checklist ID
         public async FetchCheckList_Temps_BY_ID_FromDB(checklist_id:number){
-            const res =  await prisma.templates.findFirst({
+            const res =  await prisma.templates.findMany({
                 where:{
                     checklist_id:checklist_id
+                },
+                include:{
+                    _count:{
+                        select: {
+                            questions:true
+                        }
+                    }
                 }
             })
             console.warn("Model : ",res)
             return res
         }
-    // === Get All CheckLists (Parent Categories)
+    // === add New Template
         public async PostCheckList_Temps_BY_ID_FromDB(checklist_id:number,template_title:string,questions:Question[]|undefined){
             const res =  await prisma.templates.create({
                 data:{
@@ -43,7 +50,7 @@ class checklist_templates_Model  {
                     }
                   }
                 }
-            })
+            });
             console.warn("Model : ",res)
             return res
         }

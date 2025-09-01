@@ -24,5 +24,5 @@ export interface Answer{
     fieldID:number;
     value:string;
     type:string;
-    answered_at?:string|Date;
+    answered_at?:string|Date; 
 };

@@ -22,33 +22,39 @@ class Companies_Model  {
 
     // === Add New Company
         public async PostCompanyByUserID(requestData:fullCompanySiteTYPE){
+            console.warn("hi",requestData.admin_id)
             const result =  await prisma.$transaction(async (tx) =>{
                 const company = await tx.companies.create({
                     data: {
                         admin_id: requestData.admin_id,
                         company_name: requestData.company_name,
                         sector_type: requestData.sector_type,
-                        company_email: requestData.company_email
+                        company_email: requestData.company_email,
                     }
                 });
                     // 2) أنشئ الموقع الرئيسي للشركة
-                const site = await tx.sites.create({
-                    data: {
-                        admin_id: requestData.admin_id, 
-                        site_name: requestData.site_name ?? "",
-                        full_address: requestData.full_address ?? "",
-                        post_code: requestData.post_code ?? "",
-                        lat: requestData.lat ?? "",
-                        long: requestData.long ?? "",
-                        company_id: company.id
-                    }
+                const sites = await tx.sites.createMany({
+                data: requestData.sites.map(site => ({
+                    admin_id: requestData.admin_id,
+                    site_name: site.site_name ?? "",
+                    full_address: site.full_address ?? "",
+                    post_code: site.post_code ?? "",
+                    lat: site.lat ?? "",
+                    long: site.long ?? "",
+                    company_id: company.id,
+                }))
                 });
 
-                // 3) عدّل الشركة وضع main_site_id
+                const firstSite = await tx.sites.findFirst({
+                    where: { company_id: company.id },
+                    orderBy: { id: "asc" }
+                });
+
+                // اربط الشركة بالموقع الرئيسي
                 const updatedCompany = await tx.companies.update({
-                    where: { id: company.id },
-                    data: { main_site_id: site.id },
-                    include: { sites: true }
+                where: { id: company.id },
+                data: { main_site_id: firstSite?.id },
+                include: { sites: true }
                 });
 
                 return updatedCompany;

@@ -5,6 +5,11 @@
 ## NPM ##
 * Install all packages ==> npm install
 
+git init
+git add .
+git commit -m "build check list Question Component"
+git branch -M main
+
 ## Architecture MSRC Patern ##
 ## (MSRC) Model Service Router Controller ##
 [1] user sends request ==> [2] Router directs it to Controller ==> 

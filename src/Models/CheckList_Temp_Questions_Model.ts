@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 class CheckList_Temp_Questions_Model  {
     // === Get All Questions of one Temp 
         public async Fetch_Temp_Questions_BY_ID_FromDB(template_id:number){
-            const res =  await prisma.templates.findFirst({
+            const res =  await prisma.templates.findMany({
                 where:{
                     id:template_id
                 },
