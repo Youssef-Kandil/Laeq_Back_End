@@ -3,6 +3,7 @@
 import { Request, Response } from "express";
 import tap_pay_Service from "../Services/tap_pay_Service";
 import { TapPayRequestPayload } from '../types/TapPayRequestType';
+import { BaseSubscripationType } from "../types/handelSubscripationType";
 
 
 class tap_pay_Controller {
@@ -24,8 +25,8 @@ class tap_pay_Controller {
 
     public async check(req:Request, res: Response){
         try{
-            const {operationType , transaction_id} = req.body
-            const check = await tap_pay_Service.handlePaymentStatus(transaction_id,operationType);
+            const args :BaseSubscripationType = req.body
+            const check = await tap_pay_Service.handlePaymentStatus(args);
              res.status(200).json(check);
 
         }catch(err:any){

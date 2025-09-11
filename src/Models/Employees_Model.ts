@@ -13,6 +13,11 @@ class Employees_Model  {
                     admin_id:arg.admin_id
                 },
                 include:{
+                    companies:{
+                        select:{
+                            company_name:true,
+                        }
+                    },
                     sites:{
                         select:{
                             site_name:true

@@ -26,6 +26,8 @@ class Employees_Services {
     // == Add New Checklist ==
     public async addNew_Emp_ByAdminID(requestData:employeeType) {
         try {
+            const hashed_Password : string = encryption.encryption( requestData?.password, process.env.BACKEND_PRIVATE_KEY as string);
+            requestData.password = hashed_Password;
             const res = await Employees_Model.PostNewEmployeeByAdminID(requestData)
             console.warn("Service : ",res)
             return res

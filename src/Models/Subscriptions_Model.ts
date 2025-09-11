@@ -21,7 +21,8 @@ class Subscriptions_Model  {
                 data:{
                     admin_id:args.admin_id,
                     plan_id:args.plan_id,
-                    amount:args.amount
+                    amount:args.amount,
+                    transaction_id:args.transaction_id
                 }
             })
             console.warn("Model : ",res)

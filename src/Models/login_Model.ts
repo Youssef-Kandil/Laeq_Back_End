@@ -45,8 +45,7 @@ class login_Model  {
                     end_date:true,
                     admin_account_limits:{
                       select:{
-                        max_companies:true,
-                        max_site:true,
+                        max_branches:true,
                         max_users:true,
                         max_custom_checklists:true,
                         max_Corrective_action:true,
@@ -59,9 +58,47 @@ class login_Model  {
                   }
                 });
               } else if (loginResult.role === "employee") {
-                userDetails = await prisma.employees.findFirst({
-                  where: { user_id: loginResult.id }
+                userDetails = await prisma.employees.findUnique({
+                  where: { user_id: loginResult.id },
+                   select:{
+                    full_name:true,
+                    job_title:true,
+                    admin_id:true,
+                    company_id:true,
+                    site_id:true,
+                    roles:{
+                      select:{
+                        role_name:true,
+                        role_permissions:{
+                          select:{
+                            permissions:{
+                              select:{
+                                permission_name:true,
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                   }
                 });
+
+                // === نرتب الرول والصلاحيات
+                const roleInfo = {
+                  roleName: userDetails?.roles?.role_name || null,
+                  permissions:
+                    userDetails?.roles?.role_permissions.map(
+                      (rp) => rp.permissions.permission_name
+                    ) || [],
+                };
+
+                // === ندمجها في الـ userDetails
+                userDetails = {
+                  ...userDetails,
+                  roleName: roleInfo.roleName,
+                  permissions: roleInfo.permissions,
+                };
+
               } else if (loginResult.role === "laeq") {
                 userDetails = await prisma.super_admins.findFirst({
                   where: { user_id: loginResult.id },
@@ -77,6 +114,7 @@ class login_Model  {
               }
                
                 // === Return The User Details ===
+                
                  return {
                     ...loginResult,
                     userDetails

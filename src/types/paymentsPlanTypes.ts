@@ -2,6 +2,7 @@ export interface SubscriptionType{
     admin_id:number;
     plan_id:number;
     amount:number;
+    transaction_id:string;
 }
 
 interface plan_features{

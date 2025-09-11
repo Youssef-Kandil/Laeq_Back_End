@@ -8,25 +8,26 @@ datasource db {
 }
 
 model admin_users {
-  id                   Int                    @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  id                   Int                   @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id              Int
   plan_id              Int
-  full_name            String                 @db.VarChar(45)
-  phone                String                 @db.VarChar(255)
-  register_with_google Int                    @db.TinyInt
-  date_registered      DateTime               @default(now()) @db.Timestamp(0)
-  start_date           String                 @db.VarChar(100)
-  end_date             String                 @db.VarChar(100)
-  plan_type            String                 @db.VarChar(45)
-  admin_account_limits admin_account_limits[]
-  plans                plans                  @relation(fields: [plan_id], references: [id], onDelete: Cascade, map: "admin_plan")
-  users                users                  @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_id_client")
+  full_name            String                @db.VarChar(45)
+  phone                String                @db.VarChar(255)
+  register_with_google Int                   @db.TinyInt
+  date_registered      DateTime              @default(now()) @db.Timestamp(0)
+  start_date           String                @db.VarChar(100)
+  end_date             String                @db.VarChar(100)
+  plan_type            String                @db.VarChar(45)
+  admin_account_limits admin_account_limits?
+  plans                plans                 @relation(fields: [plan_id], references: [id], onDelete: Cascade, map: "admin_plan")
+  users                users                 @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_id_client")
   assets               assets[]
   companies            companies[]
   departments          departments[]
   roles                roles[]
   sites                sites[]
   subscriptions        subscriptions[]
+  tasks                tasks[]
 
   @@index([plan_id], map: "admin_plan_idx")
   @@index([user_id], map: "user_id_client_idx")
@@ -34,7 +35,7 @@ model admin_users {
 
 model employees {
   id              Int       @id @unique(map: "id_UNIQUE") @default(autoincrement())
-  user_id         Int
+  user_id         Int       @unique(map: "user_id_UNIQUE")
   admin_id        Int       @db.UnsignedInt
   role_id         Int
   company_id      Int
@@ -101,6 +102,7 @@ model companies {
   sites_companies_main_site_idTosites sites?      @relation("companies_main_site_idTosites", fields: [main_site_id], references: [id], onDelete: Cascade, map: "main_site_id")
   employees                           employees[]
   sites                               sites[]
+  tasks                               tasks[]
 
   @@index([admin_id], map: "companies_admin_idx")
   @@index([main_site_id], map: "main_site_id_idx")
@@ -170,6 +172,7 @@ model sites {
   employees                               employees[]
   admin_users                             admin_users   @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "site_admin")
   companies                               companies     @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "site_company")
+  tasks                                   tasks[]
 
   @@index([admin_id], map: "site_admin_idx")
   @@index([company_id], map: "site_company_idx")
@@ -206,10 +209,9 @@ model features {
 
 model admin_account_limits {
   id                          Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
-  admin_id                    Int
+  admin_id                    Int         @unique(map: "admin_id_UNIQUE")
   max_custom_checklists       Int         @default(0)
-  max_companies               Int         @default(0)
-  max_site                    Int         @default(0)
+  max_branches                Int         @default(0)
   max_users                   Int         @default(0)
   free_onsite_inspections     Int         @default(0)
   Arabic_language_support     Int         @default(0) @map("Arabic language support") @db.TinyInt
@@ -256,6 +258,7 @@ model templates {
   checklist_id   Int
   template_title String      @db.VarChar(100)
   questions      questions[]
+  tasks          tasks[]
   checklists     checklists  @relation(fields: [checklist_id], references: [id], onDelete: Cascade, map: "checklist_id")
 
   @@index([checklist_id], map: "checklist_id_idx")
@@ -300,15 +303,16 @@ model super_admins {
 
 model users {
   id               Int                @id @unique(map: "id_UNIQUE") @default(autoincrement())
-  email            String             @db.VarChar(100)
+  email            String             @unique(map: "email_UNIQUE") @db.VarChar(100)
   password         String             @db.VarChar(100)
   role             String             @db.VarChar(100)
   created_at       DateTime           @default(now()) @db.Timestamp(0)
   admin_users      admin_users[]
-  employees        employees[]
+  employees        employees?
   laeq_admins      laeq_admins[]
   question_answers question_answers[]
   super_admins     super_admins[]
+  tasks            tasks[]
 }
 
 model products {
@@ -330,12 +334,13 @@ model sales {
 }
 
 model subscriptions {
-  id           Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
-  admin_id     Int
-  plan_id      Int
-  amount       Int
-  subscripe_at DateTime    @default(now()) @db.Timestamp(0)
-  admin_users  admin_users @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "admin_user_id")
+  id             Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  admin_id       Int
+  transaction_id String      @db.Text
+  plan_id        Int
+  amount         Int
+  subscripe_at   DateTime    @default(now()) @db.Timestamp(0)
+  admin_users    admin_users @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "admin_user_id")
 
   @@index([admin_id], map: "admin_user_id_idx")
 }
@@ -347,4 +352,26 @@ model laeq_admins {
   users     users  @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_id_laeq")
 
   @@index([user_id], map: "user_id_laeq_idx")
+}
+
+model tasks {
+  id          Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  admin_id    Int
+  user_id     Int
+  template_id Int
+  company_id  Int
+  site_id     Int
+  status      String      @db.VarChar(45)
+  date        DateTime    @default(now()) @db.Timestamp(0)
+  admin_users admin_users @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "admin_idTasks")
+  companies   companies   @relation(fields: [company_id], references: [id], onDelete: Cascade, map: "company_idTasks")
+  sites       sites       @relation(fields: [site_id], references: [id], onDelete: Cascade, map: "site_idTasks")
+  templates   templates   @relation(fields: [template_id], references: [id], onDelete: Cascade, map: "temp_idTasks")
+  users       users       @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_idTasks")
+
+  @@index([admin_id], map: "admin_idTasks_idx")
+  @@index([company_id], map: "company_idTasks_idx")
+  @@index([site_id], map: "site_idTasks_idx")
+  @@index([template_id], map: "temp_idTasks_idx")
+  @@index([user_id], map: "user_idTasks_idx")
 }

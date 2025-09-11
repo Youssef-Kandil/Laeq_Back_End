@@ -34,6 +34,7 @@ import CheckLists_Router from './Routers/CheckLists_Routers';
 import CheckList_Templates_Routers from './Routers/CheckList_Templates_Routers';
 import CheckList_Temp_Questions_Routers from './Routers/CheckList_Temp_Questions_Routers';
 import Checklist_Question_Answers_Routers from './Routers/Checklist_Question_Answers_Routers';
+import tasks_Routers from './Routers/tasks_Routers';
 
 
 export default function createApp(){
@@ -114,6 +115,7 @@ export default function createApp(){
     app.use(CheckList_Templates_Routers);
     app.use(CheckList_Temp_Questions_Routers);
     app.use(Checklist_Question_Answers_Routers);
+    app.use(tasks_Routers);
 
 
     // === ABOUT API END POINTS ===
@@ -184,7 +186,6 @@ app.get('/imgToPDF', (req: Request, res: Response) => {
 
 
     return app;
-
     
 }
 

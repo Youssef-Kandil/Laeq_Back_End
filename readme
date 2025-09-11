@@ -9,6 +9,7 @@ git init
 git add .
 git commit -m "build check list Question Component"
 git branch -M main
+git push -u origin main
 
 ## Architecture MSRC Patern ##
 ## (MSRC) Model Service Router Controller ##
