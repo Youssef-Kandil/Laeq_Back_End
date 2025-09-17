@@ -3,4 +3,6 @@ node_modules
 .env
 /dist
 /node_modules
+# Ignore GCP keys
+src/Config/gcp-key.json
 
