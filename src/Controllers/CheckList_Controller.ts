@@ -6,12 +6,17 @@ class checklists_Controller {
 
 
         // == Get All Check List (Parent Categories) ===
-        public async get(req: Request, res: Response) {
+        public async getByAdminID(req: Request, res: Response) {
             // code here
             console.log("HI")
-           const result = await checklist_Services.getAllCheckLists()
-           console.warn("Controler : ",result)
-            res.json(result)
+            const {admin_id} = req.body
+            if (admin_id) {
+                const result = await checklist_Services.getAllCheckLists(admin_id)
+                console.warn("Controler : ",result)
+                 res.json(result)
+            }else{
+                res.status(404).json({MSG:"Must Send Admin ID"})
+            }
         }
         //  == Add New Checklist ===
         public async add(req: Request, res: Response) {

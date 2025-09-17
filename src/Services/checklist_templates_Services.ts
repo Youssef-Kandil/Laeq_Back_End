@@ -34,14 +34,16 @@ class checklist_templates_Service {
             if (!requestData) {
                 return null
             }
-            if (requestData.checklist_id) {                
+            
+            if (requestData.checklist_id && requestData.template_title && Array.isArray(requestData.questions) && requestData.questions.length > 0) {                
                 const res = await checklist_templates_Model.PostCheckList_Temps_BY_ID_FromDB(requestData.checklist_id,requestData.template_title,requestData.questions)
                 console.warn("Service : ",res)
                 return res
             }
             
         } catch (error) {
-            throw error;
+            console.error("addCheckListsTemplatsByID error:", error);
+            throw new Error("Failed to add checklist template");
         }
     }
 

@@ -6,19 +6,27 @@ const prisma = new PrismaClient();
 
 class checklist_Model  {
     // === Get All CheckLists (Parent Categories)
-        public async FetchCheckListFromDB(){
-            const res =  await prisma.checklists.findMany()
+        public async FetchCheckListFromDB(admin_id:number){
+            const res =  await prisma.checklists.findMany({
+                where:{
+                    OR: [
+                        { owner: "laeq" },
+                        { admin_id: admin_id }
+                      ]
+                }
+            })
             console.warn("Model : ",res)
             return res
         }
 
     // === Add New CheckLists (Parent Categories)
-        public async PostCheckListFromDB(checklist_title:string,admin_id:number){
+        public async PostCheckListFromDB(checklist_title:string,admin_id:number,owner:string){
             const res =  await prisma.checklists.create(
                 {
                     data:{
                         checklist_title,
                         admin_id,
+                        owner,
                     }
                 }
             )

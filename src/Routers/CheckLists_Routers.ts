@@ -3,7 +3,7 @@ import CheckList_Controller from "../Controllers/CheckList_Controller";
 
 const router = Router();
 
-router.get("/get_checklists", CheckList_Controller.get);
+router.post("/get_checklists", CheckList_Controller.getByAdminID);
 router.post("/add_checklists", CheckList_Controller.add);
 
 

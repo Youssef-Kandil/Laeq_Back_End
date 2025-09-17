@@ -10,9 +10,9 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 
 class checklist_Service {
     // == Get All Checklist ==
-    public async getAllCheckLists() {
+    public async getAllCheckLists(admin_id:number) {
         try {
-            const res = await checklist_Model.FetchCheckListFromDB()
+            const res = await checklist_Model.FetchCheckListFromDB(admin_id)
             console.warn("Service : ",res)
             return res
             
@@ -22,9 +22,9 @@ class checklist_Service {
     }
 
     // == Add New Checklist ==
-    public async addNewCheckList(requestData:{checklist_title:string,admin_id:number}) {
+    public async addNewCheckList(requestData:{checklist_title:string,admin_id:number,owner:string}) {
         try {
-            const res = await checklist_Model.PostCheckListFromDB(requestData.checklist_title,requestData.admin_id)
+            const res = await checklist_Model.PostCheckListFromDB(requestData.checklist_title,requestData.admin_id,requestData.owner)
             console.warn("Service : ",res)
             return res
             

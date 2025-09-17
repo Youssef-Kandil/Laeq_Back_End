@@ -13,9 +13,14 @@ class checklists_templates_Controller {
 
     // == ADDl CheckList Templates  ==
     public async addByID(req: Request, res: Response) {
-        // code here
-       const result = await checklist_templates_Services.addCheckListsTemplatsByID(req.body)
-        res.json(result)
+        try{
+            // code here
+            const result = await checklist_templates_Services.addCheckListsTemplatsByID(req.body)
+            res.json(result)
+
+        }catch(e){
+            res.status(404).json({MSG:e})  
+        }
     }
 
 }

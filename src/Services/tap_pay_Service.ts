@@ -58,6 +58,7 @@ class tap_pay_Service {
             "Content-Type": "application/json",
           },
         });
+        console.log("CHECKK Service res >>> ",res)
     
         if (!res.ok) {
           const errText = await res.text();

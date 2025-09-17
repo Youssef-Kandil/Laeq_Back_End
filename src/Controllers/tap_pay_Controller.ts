@@ -26,7 +26,9 @@ class tap_pay_Controller {
     public async check(req:Request, res: Response){
         try{
             const args :BaseSubscripationType = req.body
+            console.log("CHECKK Controler args >>> ",args)
             const check = await tap_pay_Service.handlePaymentStatus(args);
+            console.log("CHECKK Controler check >>> ",check)
              res.status(200).json(check);
 
         }catch(err:any){
